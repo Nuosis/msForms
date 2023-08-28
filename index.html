@@ -1,19 +1,131 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
-    <meta charset="UTF-8" />
-    <style>
-      @import "./src/style.css";
-    </style>
-    <title>JSDev</title>
+      <title>Organization Parameter Form</title>
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+      <style>
+          .form-group {
+              margin-bottom: 10px; /* You can adjust this value to control the amount of spacing */
+          }
+      </style>
+
   </head>
   <body>
-    <h1>Alright. You're set.</h1>
-    <h2>Now build something amazing!</h2>
-    <button type="button">Click Me!</button>
+      <div class="container mt-5">
+          <form id="orgParamForm">
+              <div id="textContainer" class="form-row">
+                  <!-- Text inputs will be generated here -->
+              </div>
+              
+              <div id="checkboxContainer" class="form-group">
+                  <!-- Checkbox inputs will be generated here -->
+              </div>
+              <br>
+              <div class="form-group">
+                  <button type="button" class="btn btn-secondary ml-2" onclick="submitForm()">Submit</button>
+                  <button type="button" class="btn btn-secondary ml-2" onclick="resetForm()">Reset</button>
+              </div>
+          </form>
+      </div>
 
-    <script type="module">
-      import "./src/index.js";
-    </script>
+      <script>
+        function submitForm() {
+            const formData = {
+                questions: {},
+                checkboxes: [],
+                formName: document.getElementsByName('formName')[0].value
+            };
+
+            // Get the dynamically generated text inputs
+            const textInputs = document.querySelectorAll('#textContainer input[type="text"]');
+            textInputs.forEach(input => {
+                formData.questions[input.name] = input.value;
+            });
+
+            // Get the selected checkboxes
+            const selectedCheckboxes = document.querySelectorAll('input[name="permissions"]:checked');
+            selectedCheckboxes.forEach(checkbox => {
+                formData.checkboxes.push(checkbox.value);
+            });
+
+            FileMaker.PerformScript("receiveFormText", JSON.stringify(formData));
+        }
+
+
+
+
+        function resetForm() {
+          document.getElementById("orgParamForm").reset();
+        };
+
+        function generateCheckboxInputs(input) {
+          const data = JSON.parse(input);
+          const permissions = data.checkboxes;
+          const questions = data.questions;
+          const checkboxesLabel = data.checkboxesLabel;
+          console.log(checkboxesLabel);
+
+          const textContainer = document.getElementById('textContainer');
+          
+          questions.forEach(question => {
+              const questionDiv = document.createElement('div');
+              questionDiv.classList.add('form-group');
+
+              const label = document.createElement('label');
+              label.textContent = question.label;
+
+              const input = document.createElement('input');
+              input.type = 'text';
+              input.classList.add('form-control');
+              input.id = question.value;
+              input.name = question.value;
+
+              questionDiv.appendChild(label);
+              questionDiv.appendChild(input);
+
+              textContainer.appendChild(questionDiv);
+          });
+
+          const checkboxContainer = document.getElementById('checkboxContainer');
+           // Create a label element for checkboxes
+          const labelElement = document.createElement('label');
+          labelElement.textContent = checkboxesLabel; // Set the label text
+          labelElement.classList.add('form-label'); // Add a class for styling if needed
+
+          // Append the label before generating checkboxes
+          checkboxContainer.appendChild(labelElement);
+          
+          permissions.forEach(permission => {
+              const checkboxDiv = document.createElement('div');
+              checkboxDiv.classList.add('form-check');
+
+              const checkbox = document.createElement('input');
+              checkbox.type = 'checkbox';
+              checkbox.classList.add('form-check-input');
+              checkbox.id = permission.value;
+              checkbox.name = 'permissions';
+              checkbox.value = permission.value;
+
+              const label = document.createElement('label');
+              label.classList.add('form-check-label');
+              label.htmlFor = permission.value;
+              label.textContent = permission.label;
+
+              checkboxDiv.appendChild(checkbox);
+              checkboxDiv.appendChild(label);
+
+              checkboxContainer.appendChild(checkboxDiv);
+          });
+
+          // Add a hidden input field for formName
+          const hiddenInput = document.createElement('input');
+              hiddenInput.type = 'hidden';
+              hiddenInput.name = 'formName';
+              hiddenInput.value = data.formName;
+
+              // Append the hidden input field to the form
+              document.getElementById('orgParamForm').appendChild(hiddenInput);
+        }
+      </script>
   </body>
 </html>
