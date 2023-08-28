@@ -1,0 +1,43 @@
+<!DOCTYPE text>
+This modules builds out forms dynamically based on passed JS
+For example
+{
+	"checkboxes" : 
+	[
+		{
+			"label" : "AUTH module",
+			"value" : "AUTH"
+		},
+		{
+			"label" : "CRUD module",
+			"value" : "CRUD"
+		},
+		{
+			"label" : "EMAIL module",
+			"value" : "EMAIL"
+		},
+		{
+			"label" : "SMS module",
+			"value" : "SMS"
+		}
+	],
+	"checkboxesLabel" : "Select Modules to Include",
+	"formName" : "orgCreation",
+	"questions" : 
+	[
+		{
+			"label" : "Name of Org",
+			"value" : "nameOfOrg"
+		},
+		{
+			"label" : "Website",
+			"value" : "website"
+		}
+	]
+}
+
+Submit then collects the inputs and sends it to filemaker script "receiveFormText"
+To impliment, copy script loadWebviewer in FM file. Change params to reflect webViewer 
+intended to be targetted. Copy/create script receiveFormText.
+
+TODO: Load buttons dynamically
